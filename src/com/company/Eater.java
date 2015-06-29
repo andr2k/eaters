@@ -11,13 +11,10 @@ public class Eater implements Runnable{
 
     Fork first, second;
     int index;
-    int eatenPerPeriod = 0;
     long eaten = 0;
-    int ms = 100;
     boolean continueWorking = true;
-    int k = 1;
-    double priority;
-    public Eater(Fork left, Fork right, int index, double priority)
+    int cycles;
+    public Eater(Fork left, Fork right, int index, int cycles)
     {
         if (left.index > right.index) {
             this.first = left;
@@ -29,11 +26,7 @@ public class Eater implements Runnable{
             this.first = right;
         }
         this.index = index;
-        this.priority = priority;
-    }
-
-    public void setSum(double sum)
-    {
+        this.cycles = cycles;
     }
 
     public void take(Fork fork) throws Exception {
@@ -54,34 +47,45 @@ public class Eater implements Runnable{
         }
     }
 
-    public void eat() throws Exception {
-        take(first);
-        take(second);
+    public synchronized void addCycles(int n)
+    {
+        cycles += n;
+    }
 
-        long startTime = System.nanoTime();
-        long finishTime = (long) (startTime + ms * priority * 1000);
-        long startEaten = eaten;
-        while (System.nanoTime() < finishTime)
+    public synchronized void decCycles()
+    {
+        cycles --;
+    }
+
+    public void eat() throws Exception {
+        if (!isDone())
         {
+            take(first);
+            take(second);
+            TimeUnit.MILLISECONDS.sleep(17);
+            placeBack(second);
+            placeBack(first);
             eaten++;
+            decCycles();
         }
-        eatenPerPeriod = (int)(eaten - startEaten);
-        placeBack(second);
-        placeBack(first);
-        TimeUnit.NANOSECONDS.sleep((long) (1000000000 - (System.nanoTime() - startTime)));
-        //System.out.println(this.index + " has eaten " + eaten + " times");
+
+    }
+
+    public synchronized boolean isDone()
+    {
+        return cycles == 0;
     }
 
     public void print()
     {
         System.out.println(this.index + " has eaten " + eaten + " times");
     }
+
     @Override
     public void run() {
         try {
             while (continueWorking) {
                 eat();
-
             }
             Thread.currentThread().interrupt();
         } catch (Exception e) {
