@@ -61,15 +61,14 @@ public class Eater implements Runnable{
         long startTime = System.nanoTime();
         long finishTime = (long) (startTime + ms * priority * 1000);
         long startEaten = eaten;
-/*        while (System.nanoTime() < finishTime)
+        while (System.nanoTime() < finishTime)
         {
             eaten++;
-        }*/
+        }
         eatenPerPeriod = (int)(eaten - startEaten);
-        eaten++;
         placeBack(second);
         placeBack(first);
-        //TimeUnit.NANOSECONDS.sleep((long) (1000000000 - (System.nanoTime() - startTime)));
+        TimeUnit.NANOSECONDS.sleep((long) (1000000000 - (System.nanoTime() - startTime)));
         //System.out.println(this.index + " has eaten " + eaten + " times");
     }
 
