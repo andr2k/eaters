@@ -21,8 +21,10 @@ public class Monitor {
         Eater left = eaters.get(leftI);
         Eater right = eaters.get(rightI);
 
-        left.stopEating(eater);
-        right.stopEating(eater);
+        if (left.priority < eater.priority && right.priority < eater.priority) {
+            left.stopEating();
+            right.stopEating();
+        }
 
         return !(left.isEating() || right.isEating());
     }

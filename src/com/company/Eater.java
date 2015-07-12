@@ -58,18 +58,12 @@ public class Eater implements Runnable {
         return ((System.nanoTime() - startedEating) > duration);
     }
 
-    synchronized void stopEating(Eater eater) {
-        if (isEating() && (this.priority < eater.priority)) {
-            stopEating();
-        }
-    }
-
     synchronized void stopEating() {
         timedEating = 0;
         startedEating = 0;
     }
 
-    void calcStats() {
+    synchronized void calcStats() {
         long now = System.nanoTime();
         if (isEating()) {
             ateTimeTotal += now - timedEating;
@@ -119,7 +113,7 @@ public class Eater implements Runnable {
     }
 
     public String toString() {
-        String s = String.format("%d\t%d\t%d", ateNumberTotal, ateTimeTotal / 1000000, workedTotal / 1000000);
+        String s = String.format("%10d\t%10d\t%10d", ateNumberTotal, ateTimeTotal / 1000000, workedTotal / 1000000);
         return s;
     }
 }
